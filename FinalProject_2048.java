@@ -1,7 +1,6 @@
 /*  ========== Final Project 2048 ==========
  * 
  *  Game:
- *      3) Move/merge tiles and display the grid
  *      4) Check for win/lose condition
  *      5) Repeat until step 4 is true
  *      6) (Optional) Track and display score
@@ -17,20 +16,6 @@
  *              move/merge cells method(arrayGrid[][], userInput)
  *              check win condition method(arrayGrid[][])
  *              }
- *      }
- * 
- *      Char[][] move/merge cells method(arrayGrid[][], userInput) {
- *          loop (for each tile) {
- *              if (cell is empty)
- *                  moveDirection = userInput
- *              else if (cell is !empty && can be merged) {
- *                  mergeDirection = userInput
- *                  moveDirection = userInput
- *              }
- *          }
- * 
- *          return arrayGrid[][]
- * 
  *      }
  * 
  *      Boolean check win condition method(arrayGrid[][]) {
@@ -57,15 +42,22 @@ import java.util.Scanner;
 public class FinalProject_2048 {
     public static void main(String[] args) {
         int[][] grid = {
-             {0, 0, 5, 0},
-             {0, 5, 5, 0},
-             {0, 0, 0, 5},
-             {5, 5, 25, 0},
+             {0, 0, 0, 0},
+             {0, 0, 0, 0},
+             {0, 0, 0, 0},
+             {0, 0, 0, 0},
         };
 
-        displayGrid(grid);
-        moveMerge(grid, userInput());
-        displayGrid(grid);
+        int tempCounter = 0;
+
+        generateRanTile(grid);
+
+        while (tempCounter < 10) {
+            displayGrid(grid);
+            moveMerge(grid, userInput());
+            generateRanTile(grid);
+            tempCounter++;
+        }
 
     }
 
