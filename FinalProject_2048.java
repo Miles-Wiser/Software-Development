@@ -1,8 +1,6 @@
 /*  ========== Final Project 2048 ==========
  * 
  *  Game:
- *      1) Generate a tile on the first, and after, every move
- *      2) Ask user for a movement (up, down, left, right)
  *      3) Move/merge tiles and display the grid
  *      4) Check for win/lose condition
  *      5) Repeat until step 4 is true
@@ -13,42 +11,12 @@
  *          Char arrayGrid[][]
  *          
  *          loop (while win condition method() isn't true) {
- *              display grid method (arrayGrid[][])
- *              generate random tile method(arrayGrid[][])
- *              userInput
+ *              display grid method (arrayGrid[][])                 completed
+ *              generate random tile method(arrayGrid[][])          completed
+ *              userInput                                           completed
  *              move/merge cells method(arrayGrid[][], userInput)
  *              check win condition method(arrayGrid[][])
  *              }
- *      }
- * 
- *      Char[][] generate random tile method(arrayGrid[][]) {
- *          //[1][2][3][4]
- *          //[5][6][7][8]
- *          //[9][10][11][12]
- *          //[13][14][15][16]
- * 
- *          loop (while cells are not filled) {
- *              give each empty cell a number
- *              counter++
- *              }
- * 
- *          randTile = Math.random() * counter
- *          randTileValue = Math.random()
- * 
- *          // Can give 2's a higher chance to appear
- *          Switch (randTileValue) {
- *              case 0 = randTilevalue = 2
- *              case 1 = randTile value = 2
- *              case 2 = randTile value = 4
- *          }
- * 
- *          arrayGrid[][randTile] = randTileValue
- *          return arrayGrid[][]
- *      }
- * 
- *      void display grid method(arrayGrid[][]) {
- *          loop (while grid isn't fully displayed)
- *              display the grid
  *      }
  * 
  *      Char[][] move/merge cells method(arrayGrid[][], userInput) {
@@ -84,20 +52,21 @@
  * 
  */
 
-
+import java.util.Scanner;
 
 public class FinalProject_2048 {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         int[][] grid = {
             {0, 0, 0, 0},
             {0, 0, 0, 0},
             {0, 0, 0, 0},
-            {0, 0, 0, 0},
+            {0, 0, 25, 0},
         };
-        for (int i = 0; i < 17; i++) {
-            displayGrid(grid);
-            generateRanTile(grid);
-        }
+
+        displayGrid(grid);
+        moveMerge(grid, 6);
+        displayGrid(grid);
+
     }
 
     public static void displayGrid(int[][] grid) {
@@ -108,7 +77,7 @@ public class FinalProject_2048 {
                 if (j == 0)
                     System.out.print("|");
 
-                // Displays tiles number and aligns grid properly, creates borders
+                // Displays tiles' number and aligns grid properly; creates borders
                 if (grid[i][j] == 0)
                     System.out.print("    |");
                 else if (grid[i][j] <= 9) {
@@ -131,22 +100,26 @@ public class FinalProject_2048 {
         return;
     }
 
-    public static void generateRanTile (int[][] grid) {
-        int counter = -1;
+    public static void generateRanTile(int[][] grid) {
+        int counter = 0;
 
+        // Counter and assign all empty cells to later select
         for (int i = 0; i < grid.length; i++)
             for (int j = 0; j < grid.length; j++)
                 if (grid[i][j]== 0)
                     grid[i][j] = counter--;
 
+        // Create random number that will select a cell later
         int selectTile = (int)(Math.random() * counter);
-        int selectTileValue = (int)(Math.random() * 4);
 
+        // Generates a value to enter into the selected cell
+        int selectTileValue = (int)(Math.random() * 4);
         if (selectTileValue < 3)
             selectTileValue = 2;
         else 
             selectTileValue = 4;
 
+        // Assigns generated value to the selected cell and unassigns all previous empty cells.
         for (int i = 0; i < grid.length; i++)
             for (int j = 0; j < grid[i].length; j++) {
                 if (grid[i][j] == selectTile)
@@ -155,5 +128,77 @@ public class FinalProject_2048 {
                     grid[i][j] = 0;
             }
 
+    }
+
+    public static int userInput() {
+        Scanner input = new Scanner(System.in);
+
+        System.out.print("Enter move: ");
+        int userChoice = input.nextInt();
+
+        while (userChoice != 2 && userChoice != 4 && userChoice != 6 && userChoice != 8) {
+            System.out.println("That was an invalid choice.");
+            System.out.println("2 for down, 4 for left, 6 for right, 8 for up.");
+            System.out.print("Enter move: ");
+            userChoice = input.nextInt();
+        }
+
+        return userChoice;
+    }
+
+    public static int[][] moveMerge(int[][] grid, int userChoice) {
+        int counter = 0;
+        int rightLeft = 0;
+        if (userChoice == 4)
+            rightLeft = -1;
+        else if (userChoice == 6)
+            rightLeft = 1;
+
+        // Move/Merge Left
+        if (userChoice == 4) {
+            while (counter < 3) {
+                for (int i = 0; i < grid.length; i++)
+                    for (int j = 1; j < grid.length; j++) {
+
+                        // Tile -> Empty Cell; If the cell is empty, move the tile left
+                        if (grid[i][j - 1] == 0) {
+                            grid[i][j - 1] = grid[i][j];
+                            grid[i][j] = 0;
+                        }
+                        // Tile -> Equivalant Tile; If the tile is equal to the left tile, merge
+                        // Currerntly merges all equal tiles instead of stopping at one merge. I.e {5, 5, 5, 5} is {625, 0, 0, 0} instead of {25, 25, 0, 0}. It is because the counter loops throught the process 3 times.
+                        else if (grid[i][j - 1] == grid[i][j]) {
+                            grid[i][j - 1] *= grid[i][j];
+                            grid[i][j] = 0;
+                        }
+                    }
+
+                counter++;
+            }
+        }
+        // Move/Merge Right
+        else if (userChoice == 6) {
+            while (counter < 3) {
+                for (int i = 0; i < grid.length; i++)
+                    for (int j = 2; j > -1; j--) {
+
+                        // Tile -> Empty Cell; If the cell is empty, move the tile right
+                        if (grid[i][j + 1] == 0) {
+                            grid[i][j + 1] = grid[i][j];
+                            grid[i][j] = 0; 
+                        }
+                        // Tile -> Equivalant Tile; If the tile is equal to the right tile, merge
+                        // Currerntly merges all equal tiles instead of stopping at one merge. I.e {5, 5, 5, 5} is {0, 0, 0, 625} instead of {0, 0, 25, 25}. It is because the counter loops throught the process 3 times.
+                        else if (grid[i][j + 1] == grid[i][j]) {
+                            grid[i][j + 1] *= grid[i][j];
+                            grid[i][j] = 0;
+                        }
+                    }
+
+                counter++;
+            }
+        }
+
+        return grid;
     }
 }
