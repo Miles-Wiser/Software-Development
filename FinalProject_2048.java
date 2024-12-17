@@ -57,14 +57,14 @@ import java.util.Scanner;
 public class FinalProject_2048 {
     public static void main(String[] args) {
         int[][] grid = {
-             {0, 0, 0, 0},
-             {0, 0, 0, 0},
-             {0, 0, 0, 0},
-             {0, 0, 25, 0},
+             {0, 0, 5, 0},
+             {0, 5, 5, 0},
+             {0, 0, 0, 5},
+             {5, 5, 25, 0},
         };
 
         displayGrid(grid);
-        moveMerge(grid, 4);
+        moveMerge(grid, userInput());
         displayGrid(grid);
 
     }
@@ -147,7 +147,7 @@ public class FinalProject_2048 {
     }
 
     public static int[][] moveMerge(int[][] grid, int userChoice) {
-        // It may be possible to combine right/left and up/down.
+        // It is possible to combine right/left and up/down.
         // I.e. if {userChoice == 4} (int rightLeft = -1) else if (userchoice == 6) {int rightLeft = 1}
         // Then grid[i][j + rightLeft]
         int counter = 0;
@@ -156,7 +156,7 @@ public class FinalProject_2048 {
         if (userChoice == 4) {
             while (counter < 3) {
                 for (int i = 0; i < grid.length; i++)
-                    for (int j = 1; j < grid.length; j++) {
+                    for (int j = 1; j < grid[i].length; j++) {
 
                         // Tile -> Empty Cell; If the cell is empty, move the tile left
                         if (grid[i][j - 1] == 0) {
@@ -189,6 +189,50 @@ public class FinalProject_2048 {
                         // Currerntly merges all equal tiles instead of stopping at one merge. I.e {5, 5, 5, 5} is {0, 0, 0, 625} instead of {0, 0, 25, 25}. It is because the counter loops throught the process 3 times.
                         else if (grid[i][j + 1] == grid[i][j]) {
                             grid[i][j + 1] *= grid[i][j];
+                            grid[i][j] = 0;
+                        }
+                    }
+
+                counter++;
+            }
+        }
+        // Move/merge Down
+        else if (userChoice == 2) {
+            while (counter < 3) {
+                for (int i = grid.length - 2; i > -1; i--)
+                    for (int j = 0; j < grid[i].length; j++) {
+
+                        // Tile -> Empty Cell; If the cell is empty, move the tile down
+                        if (grid[i + 1][j] == 0) {
+                            grid[i + 1][j] = grid[i][j];
+                            grid[i][j] = 0;
+                        }
+                        // Tile -> Equivalant Tile; If the tile is equal to the lower tile, merge
+                        // Currerntly merges all equal tiles instead of stopping at one merge. I.e {5, 5, 5, 5} is {0, 0, 0, 625} instead of {0, 0, 25, 25}. It is because the counter loops throught the process 3 times.
+                        else if (grid[i + 1][j] == grid[i][j]) {
+                            grid[i + 1][j] *= grid[i][j];
+                            grid[i][j] = 0;
+                        }
+                    }
+
+                counter++;
+            }
+        }
+        // Move/merge Up
+        else {
+            while (counter < 3) {
+                for (int i = 1; i < grid.length; i++)
+                    for (int j = 0; j < grid[i].length; j++) {
+
+                        // Tile -> Empty Cell; If the cell is empty, move the tile down
+                        if (grid[i - 1][j] == 0) {
+                            grid[i - 1][j] = grid[i][j];
+                            grid[i][j] = 0;
+                        }
+                        // Tile -> Equivalant Tile; If the tile is equal to the lower tile, merge
+                        // Currerntly merges all equal tiles instead of stopping at one merge. I.e {5, 5, 5, 5} is {0, 0, 0, 625} instead of {0, 0, 25, 25}. It is because the counter loops throught the process 3 times.
+                        else if (grid[i - 1][j] == grid[i][j]) {
+                            grid[i - 1][j] *= grid[i][j];
                             grid[i][j] = 0;
                         }
                     }
