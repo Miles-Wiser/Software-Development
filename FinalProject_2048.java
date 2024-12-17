@@ -57,14 +57,14 @@ import java.util.Scanner;
 public class FinalProject_2048 {
     public static void main(String[] args) {
         int[][] grid = {
-            {0, 0, 0, 0},
-            {0, 0, 0, 0},
-            {0, 0, 0, 0},
-            {0, 0, 25, 0},
+             {0, 0, 0, 0},
+             {0, 0, 0, 0},
+             {0, 0, 0, 0},
+             {0, 0, 25, 0},
         };
 
         displayGrid(grid);
-        moveMerge(grid, 6);
+        moveMerge(grid, 4);
         displayGrid(grid);
 
     }
@@ -147,12 +147,10 @@ public class FinalProject_2048 {
     }
 
     public static int[][] moveMerge(int[][] grid, int userChoice) {
+        // It may be possible to combine right/left and up/down.
+        // I.e. if {userChoice == 4} (int rightLeft = -1) else if (userchoice == 6) {int rightLeft = 1}
+        // Then grid[i][j + rightLeft]
         int counter = 0;
-        int rightLeft = 0;
-        if (userChoice == 4)
-            rightLeft = -1;
-        else if (userChoice == 6)
-            rightLeft = 1;
 
         // Move/Merge Left
         if (userChoice == 4) {
