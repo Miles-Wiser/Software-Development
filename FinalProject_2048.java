@@ -1,40 +1,9 @@
 /*  ========== Final Project 2048 ==========
  * 
  *  Game:
- *      4) Check for win/lose condition
+ *      4) Check for lose condition
  *      5) Repeat until step 4 is true
  *      6) (Optional) Track and display score
- * 
- *  Plan:
- *      main {
- *          Char arrayGrid[][]
- *          
- *          loop (while win condition method() isn't true) {
- *              display grid method (arrayGrid[][])                 completed
- *              generate random tile method(arrayGrid[][])          completed
- *              userInput                                           completed
- *              move/merge cells method(arrayGrid[][], userInput)
- *              check win condition method(arrayGrid[][])
- *              }
- *      }
- * 
- *      Boolean check win condition method(arrayGrid[][]) {
- *          if (one cell has 2048) {
- *              winCon = true;
- *              print ("You win!")
- *              print ("Score is " + score) // optional
- *          }
- *          else if (can't move/merge) {
- *              wincon = true;
- *              print ("You lose.")
- *              print ("Score is " + score) // optional
- *          }
- *          else
- *              winCon = false
- *          
- *          return winCon
- *      }
- * 
  */
 
 import java.util.Scanner;
@@ -248,11 +217,11 @@ public class FinalProject_2048 {
                 if (grid[i][j] > maxValue)
                     maxValue = grid[i][j];
 
-        if (maxValue >= 16) {
+        if (maxValue >= 2048) {
             winCon = false;
             System.out.println("You Win!");
         }
-        
+
         return winCon;
     }
 }
