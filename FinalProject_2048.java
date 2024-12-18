@@ -42,23 +42,26 @@ import java.util.Scanner;
 public class FinalProject_2048 {
     public static void main(String[] args) {
         int[][] grid = {
-             {0, 0, 0, 0},
-             {0, 0, 0, 0},
-             {0, 0, 0, 0},
-             {0, 0, 0, 0},
+            {0, 0, 0, 0},
+            {0, 0, 0, 0},
+            {0, 0, 0, 0},
+            {0, 0, 0, 0},
         };
 
-        int tempCounter = 0;
-
+        generateRanTile(grid);
         generateRanTile(grid);
 
-        while (tempCounter < 10) {
+        boolean winCon = true;
+
+        while (winCon == true) {
             displayGrid(grid);
             moveMerge(grid, userInput());
             generateRanTile(grid);
-            tempCounter++;
+            
+            winCon = checkWinCon(grid, winCon);
         }
-
+        displayGrid(grid);
+ 
     }
 
     public static void displayGrid(int[][] grid) {
@@ -68,7 +71,7 @@ public class FinalProject_2048 {
                 // Create the leftmost border
                 if (j == 0)
                     System.out.print("|");
-
+ 
                 // Displays tiles' number and aligns grid properly; creates borders
                 if (grid[i][j] == 0)
                     System.out.print("    |");
@@ -119,12 +122,12 @@ public class FinalProject_2048 {
                 else if (grid[i][j] < 0)
                     grid[i][j] = 0;
             }
-
+ 
     }
 
     public static int userInput() {
         Scanner input = new Scanner(System.in);
-
+ 
         System.out.print("Enter move: ");
         int userChoice = input.nextInt();
 
@@ -134,7 +137,7 @@ public class FinalProject_2048 {
             System.out.print("Enter move: ");
             userChoice = input.nextInt();
         }
-
+ 
         return userChoice;
     }
 
@@ -158,7 +161,7 @@ public class FinalProject_2048 {
                         // Tile -> Equivalant Tile; If the tile is equal to the left tile, merge
                         // Currerntly merges all equal tiles instead of stopping at one merge. I.e {5, 5, 5, 5} is {625, 0, 0, 0} instead of {25, 25, 0, 0}. It is because the counter loops throught the process 3 times.
                         else if (grid[i][j - 1] == grid[i][j]) {
-                            grid[i][j - 1] *= grid[i][j];
+                            grid[i][j - 1] *= 2;
                             grid[i][j] = 0;
                         }
                     }
@@ -180,7 +183,7 @@ public class FinalProject_2048 {
                         // Tile -> Equivalant Tile; If the tile is equal to the right tile, merge
                         // Currerntly merges all equal tiles instead of stopping at one merge. I.e {5, 5, 5, 5} is {0, 0, 0, 625} instead of {0, 0, 25, 25}. It is because the counter loops throught the process 3 times.
                         else if (grid[i][j + 1] == grid[i][j]) {
-                            grid[i][j + 1] *= grid[i][j];
+                            grid[i][j + 1] *= 2;
                             grid[i][j] = 0;
                         }
                     }
@@ -202,7 +205,7 @@ public class FinalProject_2048 {
                         // Tile -> Equivalant Tile; If the tile is equal to the lower tile, merge
                         // Currerntly merges all equal tiles instead of stopping at one merge. I.e {5, 5, 5, 5} is {0, 0, 0, 625} instead of {0, 0, 25, 25}. It is because the counter loops throught the process 3 times.
                         else if (grid[i + 1][j] == grid[i][j]) {
-                            grid[i + 1][j] *= grid[i][j];
+                            grid[i + 1][j] *= 2;
                             grid[i][j] = 0;
                         }
                     }
@@ -224,7 +227,7 @@ public class FinalProject_2048 {
                         // Tile -> Equivalant Tile; If the tile is equal to the lower tile, merge
                         // Currerntly merges all equal tiles instead of stopping at one merge. I.e {5, 5, 5, 5} is {0, 0, 0, 625} instead of {0, 0, 25, 25}. It is because the counter loops throught the process 3 times.
                         else if (grid[i - 1][j] == grid[i][j]) {
-                            grid[i - 1][j] *= grid[i][j];
+                            grid[i - 1][j] *= 2;
                             grid[i][j] = 0;
                         }
                     }
@@ -234,5 +237,22 @@ public class FinalProject_2048 {
         }
 
         return grid;
+    }
+
+    public static boolean checkWinCon(int[][] grid, boolean winCon) {
+        winCon = true;
+        int maxValue = 0;
+        
+        for (int i = 0; i < grid.length; i++)
+            for (int j = 0; j < grid[i].length; j++)
+                if (grid[i][j] > maxValue)
+                    maxValue = grid[i][j];
+
+        if (maxValue >= 16) {
+            winCon = false;
+            System.out.println("You Win!");
+        }
+        
+        return winCon;
     }
 }
