@@ -1,11 +1,3 @@
-/*  ========== Final Project 2048 ==========
- * 
- *  Game:
- *      4) Check for lose condition
- *      5) Repeat until step 4 is true
- *      6) (Optional) Track and display score
- */
-
 import java.util.Scanner;
 
 public class FinalProject_2048 {
@@ -17,6 +9,9 @@ public class FinalProject_2048 {
             {0, 0, 0, 0},
         };
 
+        System.out.println("Welcome to 2048.");
+        System.out.println("To move tiles, use:");
+        System.out.println("2 for down, 4 for left, 6 for right, 8 for up and 55555 to quit.");         
         generateRanTile(grid);
         generateRanTile(grid);
 
@@ -26,11 +21,11 @@ public class FinalProject_2048 {
             displayGrid(grid);
             moveMerge(grid, userInput());
             generateRanTile(grid);
-            
+
             winCon = checkWinCon(grid, winCon);
         }
         displayGrid(grid);
- 
+
     }
 
     public static void displayGrid(int[][] grid) {
@@ -40,7 +35,7 @@ public class FinalProject_2048 {
                 // Create the leftmost border
                 if (j == 0)
                     System.out.print("|");
- 
+
                 // Displays tiles' number and aligns grid properly; creates borders
                 if (grid[i][j] == 0)
                     System.out.print("    |");
@@ -91,30 +86,27 @@ public class FinalProject_2048 {
                 else if (grid[i][j] < 0)
                     grid[i][j] = 0;
             }
- 
-    }
 
+    }
+ 
     public static int userInput() {
         Scanner input = new Scanner(System.in);
- 
+
         System.out.print("Enter move: ");
         int userChoice = input.nextInt();
 
-        while (userChoice != 2 && userChoice != 4 && userChoice != 6 && userChoice != 8) {
+        while (userChoice != 2 && userChoice != 4 && userChoice != 6 && userChoice != 8 && userChoice != 55555) {
             System.out.println("That was an invalid choice.");
-            System.out.println("2 for down, 4 for left, 6 for right, 8 for up.");
+            System.out.println("2 for down, 4 for left, 6 for right, 8 for up and 55555 to quit.");
             System.out.print("Enter move: ");
             userChoice = input.nextInt();
         }
- 
+
         return userChoice;
     }
 
     public static int[][] moveMerge(int[][] grid, int userChoice) {
-        // It is possible to combine right/left and up/down.
-        // I.e. if {userChoice == 4} (int rightLeft = -1) else if (userchoice == 6) {int rightLeft = 1}
-        // Then grid[i][j + rightLeft]
-        int counter = 0;
+         int counter = 0;
 
         // Move/Merge Left
         if (userChoice == 4) {
@@ -128,7 +120,6 @@ public class FinalProject_2048 {
                             grid[i][j] = 0;
                         }
                         // Tile -> Equivalant Tile; If the tile is equal to the left tile, merge
-                        // Currerntly merges all equal tiles instead of stopping at one merge. I.e {5, 5, 5, 5} is {625, 0, 0, 0} instead of {25, 25, 0, 0}. It is because the counter loops throught the process 3 times.
                         else if (grid[i][j - 1] == grid[i][j]) {
                             grid[i][j - 1] *= 2;
                             grid[i][j] = 0;
@@ -150,7 +141,6 @@ public class FinalProject_2048 {
                             grid[i][j] = 0; 
                         }
                         // Tile -> Equivalant Tile; If the tile is equal to the right tile, merge
-                        // Currerntly merges all equal tiles instead of stopping at one merge. I.e {5, 5, 5, 5} is {0, 0, 0, 625} instead of {0, 0, 25, 25}. It is because the counter loops throught the process 3 times.
                         else if (grid[i][j + 1] == grid[i][j]) {
                             grid[i][j + 1] *= 2;
                             grid[i][j] = 0;
@@ -172,7 +162,6 @@ public class FinalProject_2048 {
                             grid[i][j] = 0;
                         }
                         // Tile -> Equivalant Tile; If the tile is equal to the lower tile, merge
-                        // Currerntly merges all equal tiles instead of stopping at one merge. I.e {5, 5, 5, 5} is {0, 0, 0, 625} instead of {0, 0, 25, 25}. It is because the counter loops throught the process 3 times.
                         else if (grid[i + 1][j] == grid[i][j]) {
                             grid[i + 1][j] *= 2;
                             grid[i][j] = 0;
@@ -183,7 +172,7 @@ public class FinalProject_2048 {
             }
         }
         // Move/merge Up
-        else {
+        else  if (userChoice == 8) {
             while (counter < 3) {
                 for (int i = 1; i < grid.length; i++)
                     for (int j = 0; j < grid[i].length; j++) {
@@ -194,7 +183,6 @@ public class FinalProject_2048 {
                             grid[i][j] = 0;
                         }
                         // Tile -> Equivalant Tile; If the tile is equal to the lower tile, merge
-                        // Currerntly merges all equal tiles instead of stopping at one merge. I.e {5, 5, 5, 5} is {0, 0, 0, 625} instead of {0, 0, 25, 25}. It is because the counter loops throught the process 3 times.
                         else if (grid[i - 1][j] == grid[i][j]) {
                             grid[i - 1][j] *= 2;
                             grid[i][j] = 0;
@@ -205,13 +193,19 @@ public class FinalProject_2048 {
             }
         }
 
+        // Quit
+        else {
+            System.out.println("\nEnd Game");
+            System.exit(0);
+        }
+
         return grid;
     }
 
     public static boolean checkWinCon(int[][] grid, boolean winCon) {
         winCon = true;
         int maxValue = 0;
-        
+ 
         for (int i = 0; i < grid.length; i++)
             for (int j = 0; j < grid[i].length; j++)
                 if (grid[i][j] > maxValue)
