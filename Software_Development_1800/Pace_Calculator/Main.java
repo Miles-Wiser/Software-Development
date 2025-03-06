@@ -93,12 +93,11 @@ public class Main extends Application{
     }
 
     public void setPace(double t, double d) {
-        int minute = (int)(t / d) % 3600;
-        double seconds = (int)(t / d) % 60;
-        pace = minute + " min " + seconds + "seconds";
+        int minute = (int)(t / d) / 60 % 60;
+        int seconds = (int)(t / d) % 60;
+        pace = minute + " min " + seconds + "seconds /mi";
     }
     public String getPace() {
         return pace;
     }
 }
-
