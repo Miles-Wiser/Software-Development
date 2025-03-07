@@ -9,12 +9,15 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class Main extends Application {
+    final double MILE = 0.6214;
+    final double KILOMETER = 1.609;
+
+    double pace;
     double time;
-    String paceString;
-    double paceInt;
-    int paceMinute;
-    int paceSeconds;
+    double distance;
+    
     String paceUnit;
+    String distanceUnit;
     
     public static void main(String[] args) {
         launch(args);
@@ -24,21 +27,19 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
             /// Time properties
             final Text TXT_TIME_ENTRY = new Text("Enter a Time");
-            TextField tfTimeEntryHr = new TextField("00");
-            TextField tfTimeEntryMin = new TextField("6");
-            TextField tfTimeEntrySec = new TextField("00");
+            TextField tfTimeHr = new TextField("01");
+            TextField tfTimeMin = new TextField("30");
+            TextField tfTimeSec = new TextField("30");
 
             /// Pace properties
             final Text TXT_PACE_ENTRY = new Text("Enter a Pace");
-            TextField tfPaceEntryMin = new TextField("08");
-            TextField tfPaceEntrySec = new TextField("30");
-            final ComboBox<String> CBO_PACE_ENTRY_UNIT = new ComboBox<>();
+            TextField tfPaceMin = new TextField("10");
+            TextField tfPaceSec = new TextField("00");
             final Text TXT_PACE_ENTRY_UNIT = new Text("/min");
         
             /// Distance properties
             final Text TXT_DISTANCE_ENTRY = new Text("Enter a Distance");
-            TextField tfDistance = new TextField("01");
-            final ComboBox<String> CBO_DISTANCE_ENTRY = new ComboBox<>();
+            TextField tfDistance = new TextField("06");
         
             // Calculate properties
             Button btnCalTime = new Button("Calculate Time");
@@ -55,13 +56,9 @@ public class Main extends Application {
              */
             public Entry() {
             // Display Grid
-            entryGrid.addRow(0, TXT_TIME_ENTRY, tfTimeEntryHr, tfTimeEntryMin, tfTimeEntrySec);
-        
-            CBO_PACE_ENTRY_UNIT.getItems().setAll("km", "mi");
-            entryGrid.addRow(1, TXT_PACE_ENTRY, tfPaceEntryMin, tfPaceEntrySec, CBO_PACE_ENTRY_UNIT, TXT_PACE_ENTRY_UNIT);
-                
-            CBO_DISTANCE_ENTRY.getItems().setAll("km", "mi");
-            entryGrid.addRow(2, TXT_DISTANCE_ENTRY, tfDistance, CBO_DISTANCE_ENTRY);
+            entryGrid.addRow(0, TXT_TIME_ENTRY, tfTimeHr, tfTimeMin, tfTimeSec);
+            entryGrid.addRow(1, TXT_PACE_ENTRY, tfPaceMin, tfPaceSec, TXT_PACE_ENTRY_UNIT);
+            entryGrid.addRow(2, TXT_DISTANCE_ENTRY, tfDistance);
                 
             entryGrid.add(btnCalTime, 2, 3);
             entryGrid.add(btnCalPace, 3, 3);
@@ -71,25 +68,13 @@ public class Main extends Application {
  
         class PopularEvents {
             private GridPane grid = new GridPane(10, 15);
-            private Text txtPace = new Text(getPace());
-            private double kmPace;
-            private double miPace;
-            private int tempPaceMinute;
-            private int tempPaceSeconds;
+            private Text txtPace = new Text(toStringPace());
         
             /**
              * Create instance of {@code PopularEvents}.
              * Shows a list of times for different distances in a grid
              */
             public PopularEvents(String unit) {
-                if (unit == "mi") {
-                    kmPace = (int)(paceInt / 1.6093);
-                    miPace = (int)paceInt;
-                }
-                else {
-                    kmPace = (int)paceInt;
-                    miPace = (int)(paceInt / 0.6214);
-                }
 
                 /// Pace
                 grid.add(txtPace, 0, 0);
@@ -101,55 +86,20 @@ public class Main extends Application {
                     new Text("5mi"), new Text("10mi"), new Text("Half-Marathon"));
 
                 /// Event times
-                grid.addColumn(1, new Text(), new Text((conMin(false) / 4) + ":" + (conSec(false) / 4)), // 400m
-                    new Text((conMin(false) / 2) + ":" + (conSec(false) / 2)),                                       // 800m
-                    new Text((conMin(false, 5)) + ":" + (conSec(false, 5))),                                     // 5k
-                    new Text((conMin(false, 10)) + ":" + (conSec(false, 10))),                                   // 10k
-                    new Text((conMin(true, 26.2)) + ":" + (conSec(true, 26.2))));                                // Marathon (26.2mi)
-
-                grid.addColumn(3, btnReturn, new Text((conMin(true)) + ":" + (conSec(true))),           // 1mi
-                new Text((conMin(true, 3)) + ":" + (conSec(true, 3))),                                           // 3mi
-                new Text((conMin(true, 5)) + ":" + (conSec(true, 5))),                                           // 5mi
-                new Text((conMin(true, 10)) + ":" + (conSec(true, 10))),                                         // 10mi
-                new Text((conMin(true, 13.1)) + ":" + (conSec(true, 13.1))));                                    // Half-Marathon (13.1mi)
-
+                grid.addColumn(1, new Text(), new Text(toStringPace(.25)), // 400m
+                    new Text(toStringPace(.5)),                            // 800m
+                    new Text(toStringPace(5 * MILE)),                   // 5k
+                    new Text(toStringPace(10 * MILE)),                  // 10k
+                    new Text(toStringPace(26.2))                           // Marathon (26.2mi)
+                );
+                grid.addColumn(3, btnReturn, new Text(toStringPace(1)),     // 1mi
+                    new Text(toStringPace(3)),                              // 3mi
+                    new Text(toStringPace(5)),                              // 5mi
+                    new Text(toStringPace(10)),                             // 10mi
+                    new Text(toStringPace(13.1))                            // Half-Marathon (13.1mi)
+                );
                 pane.getChildren().clear();
                 pane.getChildren().add(grid);
-            }
-
-            public int conMin(boolean mi) {
-                if (!mi)
-                    return tempPaceMinute = (int)(miPace / 60 % 60);
-                else
-                    return tempPaceMinute = (int)(kmPace / 60 % 60);
-            }
-            public int conSec(boolean mi) {
-                if (!mi)
-                    return tempPaceSeconds = (int)(miPace % 60);
-                else
-                    return tempPaceSeconds = (int)(kmPace % 60);
-            }
-            public int conMin(boolean mi, double c) {
-                if (!mi) {
-                    c *= .6214;
-
-                    return tempPaceMinute = (int)(c * miPace / 60 % 60);
-                }
-                else {
-                    c *= 1.609;
-                    return tempPaceMinute = (int)(c * kmPace / 60 % 60);
-                }
-            }
-            public int conSec(boolean mi, double c) {
-                if (!mi) {
-                    c *= .6214;
-
-                    return tempPaceSeconds = (int)(c * miPace % 60);
-                }
-                else {
-                    c *= 1.609;
-                    return tempPaceSeconds = (int)(c * kmPace % 60);
-                }
             }
         }
 
@@ -159,39 +109,40 @@ public class Main extends Application {
              * Shows the splits of a distance evenly spread across 1mi/1km increments.
              */
             private GridPane grid = new GridPane(10, 15);
-            private Text txtPace = new Text(getPace());
+            private Text txtPace = new Text();
             private double kmPace;
             private double miPace;
-            private int tempPaceMinute;
-            private int tempPaceSeconds;
+
 
             public Splits(String unit) {
-                int kmSplits;
                 // Checks if the distance has a decimal for math later.
+                int kmSplits;
                 if (Double.parseDouble(tfDistance.getText()) % 1 == 0)
                     kmSplits = Integer.parseInt(tfDistance.getText());
                 else
                     kmSplits = (int)(Double.parseDouble(tfDistance.getText())) + 1;
 
-                int miSplits;
                 // Checks if the distance has a decimal for math later.
+                int miSplits;
                 if (Double.parseDouble(tfDistance.getText()) % 1 == 0)
                     miSplits = Integer.parseInt(tfDistance.getText());
                 else
                     miSplits = (int)(Double.parseDouble(tfDistance.getText())) + 1;
 
                 grid.add(txtPace, 0, 0);
+
                 // Kilometer splits
                 for (int i = 1; i <= kmSplits; i++) {
                     grid.add(new Text(i + "km"), 0, i);
-                    grid.add(new Text(i + " * " + paceMinute), 1, i);
+                    grid.add(new Text(toStringTime(i * MILE) + ""), 1, i);
                 }
 
-                grid.add(btnReturn, 3, 0);
+                grid.addRow(0, new Text(toStringTime()), new Text(), btnReturn);
+
                 // Mile Splits
-                for (int i = 1; i <= kmSplits; i++) {
+                for (int i = 1; i <= miSplits; i++) {
                     grid.add(new Text(i + "mi"), 2, i);
-                    grid.add(new Text(i + " * " + paceMinute), 3, i);
+                    grid.add(new Text(toStringTime(i) + ""), 3, i);
                 }
  
                 pane.getChildren().clear();
@@ -200,30 +151,18 @@ public class Main extends Application {
         }
         /// Button Events
         btnCalTime.setOnAction(e -> {
-            final double TIME = Double.parseDouble(tfTimeEntryHr.getText()) * 3600 +
-                Double.parseDouble(tfTimeEntryMin.getText()) * 60 +
-                Double.parseDouble(tfTimeEntrySec.getText());
-            final double PACE = Double.parseDouble(tfPaceEntryMin.getText()) +
-                Double.parseDouble(tfPaceEntrySec.getText()) / 60;
-            final double DISTANCE = Double.parseDouble(tfDistance.getText());
-
-            if (CBO_DISTANCE_ENTRY.getValue() != null && CBO_PACE_ENTRY_UNIT.getValue() != null) {
-                setTime(PACE, DISTANCE);
-                setPace(TIME, DISTANCE, CBO_DISTANCE_ENTRY);
-                Splits splits = new Splits(paceUnit);
-            }
+                setTime(Double.parseDouble(tfPaceMin.getText()),
+                    Double.parseDouble(tfPaceSec.getText()),
+                    getDistance());
+                Splits splits = new Splits(paceUnit);            
         });
 
         btnCalPace.setOnAction(e -> {
-            final double TIME = Double.parseDouble(tfTimeEntryHr.getText()) * 3600 +
-                Double.parseDouble(tfTimeEntryMin.getText()) * 60 +
-                Double.parseDouble(tfTimeEntrySec.getText());
-            final double DISTANCE = Double.parseDouble(tfDistance.getText());
-
-            if (CBO_DISTANCE_ENTRY.getValue() != null) {
-                setPace(TIME, DISTANCE, CBO_DISTANCE_ENTRY);
+                setDistance(tfDistance);
+                setPace(Double.parseDouble(tfTimeHr.getText()),
+                    Double.parseDouble(tfTimeMin.getText()),
+                    Double.parseDouble(tfTimeSec.getText()), getDistance());
                 PopularEvents displayGrid = new PopularEvents(paceUnit);
-            }
         });
 
         btnReturn.setOnAction(e -> {
@@ -239,21 +178,44 @@ public class Main extends Application {
         primaryStage.show();
     }
     
-    public void setTime(double p, double d) {
-        time = p * d;
-    }
-    public double getTime() {
-        return time;
+    /// Pace Methods
+    public void setPace(double hr, double min, double sec, double distance) {
+        pace =  (hr * 3600 + min * 60 + sec) / distance;
     }
 
-    public void setPace(double t, double d, ComboBox<String> c) {
-        paceInt = (t / d);
-        paceMinute = (int)paceInt / 60 % 60;
-        paceSeconds = (int)paceInt % 60;
-        paceUnit = c.getValue();
-        paceString = paceMinute + " min " + paceSeconds + " seconds / " + c.getValue();
+    public String toStringPace() {
+        return (int)(pace / 60 % 60) + ":" + (double)Math.round(pace % 60 * 100) / 100;
     }
-    public String getPace() {
-        return paceString;
+    public String toStringPace(double m) {
+        double tempPace = m * pace;
+        return (int)(tempPace / 60 % 60) + ":" +  (double)Math.round(tempPace % 60 * 100) / 100;
+    }
+
+    public void paceToKm() {
+        pace *= 1.609;
+    }
+
+    public void paceToMi() {
+        pace *= 0.6214;
+    }
+
+    /// Time methods
+    public void setTime(double min, double sec, double distance) {
+        time = (min * 60 + sec) * distance;
+    }
+
+    public String toStringTime() {
+        return (int)(time / 3600 % 60) + ":" + (int)(time / 60 % 60) + ":" + (int)(time % 60);
+    }
+    public String toStringTime(double m) {
+        double tempTime = time * m;
+        return (int)(tempTime / 3600 % 60) + ":" + (int)(tempTime / 60 % 60) + ":" + (int)(tempTime % 60);
+    }
+    /// Distance methods
+    public void setDistance(TextField tf) {
+        distance = Double.parseDouble(tf.getText());
+    }
+    public double getDistance() {
+        return distance;
     }
 }
