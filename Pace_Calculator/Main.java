@@ -57,10 +57,10 @@ public class Main extends Application {
             // Display Grid
             entryGrid.addRow(0, TXT_TIME_ENTRY, tfTimeEntryHr, tfTimeEntryMin, tfTimeEntrySec);
         
-            CBO_PACE_ENTRY_UNIT.getItems().addAll("km", "mi");
+            CBO_PACE_ENTRY_UNIT.getItems().setAll("km", "mi");
             entryGrid.addRow(1, TXT_PACE_ENTRY, tfPaceEntryMin, tfPaceEntrySec, CBO_PACE_ENTRY_UNIT, TXT_PACE_ENTRY_UNIT);
                 
-            CBO_DISTANCE_ENTRY.getItems().addAll("km", "mi");
+            CBO_DISTANCE_ENTRY.getItems().setAll("km", "mi");
             entryGrid.addRow(2, TXT_DISTANCE_ENTRY, tfDistance, CBO_DISTANCE_ENTRY);
                 
             entryGrid.add(btnCalTime, 2, 3);
@@ -153,15 +153,64 @@ public class Main extends Application {
             }
         }
 
+        class Splits {
+            /**
+             * Creates an instance of {@code Splits}.
+             * Shows the splits of a distance evenly spread across 1mi/1km increments.
+             */
+            private GridPane grid = new GridPane();
+            private Text txtPace = new Text(getPace());
+            private double kmPace;
+            private double miPace;
+            private int tempPaceMinute;
+            private int tempPaceSeconds;
+
+            public Splits(String unit) {
+                int kmSplits;
+                // Checks if the distance has a decimal for math later.
+                if (Double.parseDouble(tfDistance.getText()) % 1 == 0)
+                    kmSplits = Integer.parseInt(tfDistance.getText());
+                else
+                    kmSplits = (int)(Double.parseDouble(tfDistance.getText())) + 1;
+
+                int miSplits;
+                // Checks if the distance has a decimal for math later.
+                if (Double.parseDouble(tfDistance.getText()) % 1 == 0)
+                    miSplits = Integer.parseInt(tfDistance.getText());
+                else
+                    miSplits = (int)(Double.parseDouble(tfDistance.getText())) + 1;
+
+                grid.add(txtPace, 0, 0);
+                // Kilometer splits
+                for (int i = 1; i <= kmSplits; i++) {
+                    grid.add(new Text(i + "km"), 0, i);
+                    grid.add(new Text(i + " * " + paceMinute), 1, i);
+                }
+
+                grid.add(btnReturn, 3, 0);
+                // Mile Splits
+                for (int i = 1; i <= kmSplits; i++) {
+                    grid.add(new Text(i + "mi"), 2, i);
+                    grid.add(new Text(i + " * " + paceMinute), 3, i);
+                }
+ 
+                pane.getChildren().clear();
+                pane.getChildren().add(grid);
+            }
+        }
         /// Button Events
         btnCalTime.setOnAction(e -> {
+            final double TIME = Double.parseDouble(tfTimeEntryHr.getText()) * 3600 +
+                Double.parseDouble(tfTimeEntryMin.getText()) * 60 +
+                Double.parseDouble(tfTimeEntrySec.getText());
             final double PACE = Double.parseDouble(tfPaceEntryMin.getText()) +
                 Double.parseDouble(tfPaceEntrySec.getText()) / 60;
             final double DISTANCE = Double.parseDouble(tfDistance.getText());
 
             if (CBO_DISTANCE_ENTRY.getValue() != null && CBO_PACE_ENTRY_UNIT.getValue() != null) {
                 setTime(PACE, DISTANCE);
-                System.out.println(getTime());
+                setPace(TIME, DISTANCE, CBO_DISTANCE_ENTRY);
+                Splits splits = new Splits(paceUnit);
             }
         });
 
@@ -173,7 +222,6 @@ public class Main extends Application {
 
             if (CBO_DISTANCE_ENTRY.getValue() != null) {
                 setPace(TIME, DISTANCE, CBO_DISTANCE_ENTRY);
-                // System.out.println(getPace());
                 PopularEvents displayGrid = new PopularEvents(paceUnit);
             }
         });
