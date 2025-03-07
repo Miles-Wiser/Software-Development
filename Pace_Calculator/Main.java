@@ -46,7 +46,7 @@ public class Main extends Application {
             Button btnReturn = new Button("Return");
 
             Pane pane = new Pane();
-                 
+   
         class Entry {
             GridPane entryGrid = new GridPane(10, 15);
             /**
@@ -70,7 +70,7 @@ public class Main extends Application {
         }
  
         class PopularEvents {
-            private GridPane grid = new GridPane();
+            private GridPane grid = new GridPane(10, 15);
             private Text txtPace = new Text(getPace());
             private double kmPace;
             private double miPace;
@@ -158,7 +158,7 @@ public class Main extends Application {
              * Creates an instance of {@code Splits}.
              * Shows the splits of a distance evenly spread across 1mi/1km increments.
              */
-            private GridPane grid = new GridPane();
+            private GridPane grid = new GridPane(10, 15);
             private Text txtPace = new Text(getPace());
             private double kmPace;
             private double miPace;
