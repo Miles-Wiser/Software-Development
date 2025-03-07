@@ -8,64 +8,67 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-public class Main extends Application{
+public class Main extends Application {
     double time;
     String paceString;
     double paceInt;
     int paceMinute;
     int paceSeconds;
     String paceUnit;
+    
     public static void main(String[] args) {
         launch(args);
     }
     
     @Override
     public void start(Stage primaryStage) {
-        GridPane entryGrid = new GridPane(10, 15);
-    
-        /// Time properties
-        final Text TXT_TIME_ENTRY = new Text("Enter a Time");
-        TextField tfTimeEntryHr = new TextField("00");
-        TextField tfTimeEntryMin = new TextField("6");
-        TextField tfTimeEntrySec = new TextField("00");
+            /// Time properties
+            final Text TXT_TIME_ENTRY = new Text("Enter a Time");
+            TextField tfTimeEntryHr = new TextField("00");
+            TextField tfTimeEntryMin = new TextField("6");
+            TextField tfTimeEntrySec = new TextField("00");
 
-        /// Pace properties
-        final Text TXT_PACE_ENTRY = new Text("Enter a Pace");
-        TextField tfPaceEntryMin = new TextField("08");
-        TextField tfPaceEntrySec = new TextField("30");
-        final ComboBox<String> CBO_PACE_ENTRY_UNIT = new ComboBox<>();
-        final Text TXT_PACE_ENTRY_UNIT = new Text("/min");
-    
-        /// Distance properties
-        final Text TXT_DISTANCE_ENTRY = new Text("Enter a Distance");
-        TextField tfDistance = new TextField("01");
-        final ComboBox<String> CBO_DISTANCE_ENTRY = new ComboBox<>();
-    
-        // Calculate properties
-        Button btnCalTime = new Button("Calculate Time");
-        Button btnCalPace = new Button("Calculate Pace");
-    
-        // Display Grid
-        entryGrid.addRow(0, TXT_TIME_ENTRY, tfTimeEntryHr, tfTimeEntryMin, tfTimeEntrySec);
-    
-        CBO_PACE_ENTRY_UNIT.getItems().addAll("km", "mi");
-        entryGrid.addRow(1, TXT_PACE_ENTRY, tfPaceEntryMin, tfPaceEntrySec, CBO_PACE_ENTRY_UNIT, TXT_PACE_ENTRY_UNIT);
-            
-        CBO_DISTANCE_ENTRY.getItems().addAll("km", "mi");
-        entryGrid.addRow(2, TXT_DISTANCE_ENTRY, tfDistance, CBO_DISTANCE_ENTRY);
-            
-        entryGrid.add(btnCalTime, 2, 3);
-        entryGrid.add(btnCalPace, 3, 3);
-        Pane pane = new Pane();
-        pane.getChildren().add(entryGrid);
-    
-        // Scene and Stage
-        Scene scene = new Scene(pane, 700, 250);
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Split Calculator");
-        primaryStage.show();
+            /// Pace properties
+            final Text TXT_PACE_ENTRY = new Text("Enter a Pace");
+            TextField tfPaceEntryMin = new TextField("08");
+            TextField tfPaceEntrySec = new TextField("30");
+            final ComboBox<String> CBO_PACE_ENTRY_UNIT = new ComboBox<>();
+            final Text TXT_PACE_ENTRY_UNIT = new Text("/min");
+        
+            /// Distance properties
+            final Text TXT_DISTANCE_ENTRY = new Text("Enter a Distance");
+            TextField tfDistance = new TextField("01");
+            final ComboBox<String> CBO_DISTANCE_ENTRY = new ComboBox<>();
+        
+            // Calculate properties
+            Button btnCalTime = new Button("Calculate Time");
+            Button btnCalPace = new Button("Calculate Pace");
+            Button btnReturn = new Button("Return");
 
-        /// Inner class
+            Pane pane = new Pane();
+                 
+        class Entry {
+            GridPane entryGrid = new GridPane(10, 15);
+            /**
+             * Creates instance of {@code Entry}
+             * Displays textfield entry boxes and buttons to calculate time and pace.
+             */
+            public Entry() {
+            // Display Grid
+            entryGrid.addRow(0, TXT_TIME_ENTRY, tfTimeEntryHr, tfTimeEntryMin, tfTimeEntrySec);
+        
+            CBO_PACE_ENTRY_UNIT.getItems().addAll("km", "mi");
+            entryGrid.addRow(1, TXT_PACE_ENTRY, tfPaceEntryMin, tfPaceEntrySec, CBO_PACE_ENTRY_UNIT, TXT_PACE_ENTRY_UNIT);
+                
+            CBO_DISTANCE_ENTRY.getItems().addAll("km", "mi");
+            entryGrid.addRow(2, TXT_DISTANCE_ENTRY, tfDistance, CBO_DISTANCE_ENTRY);
+                
+            entryGrid.add(btnCalTime, 2, 3);
+            entryGrid.add(btnCalPace, 3, 3);
+            pane.getChildren().add(entryGrid);
+            }
+        }
+ 
         class PopularEvents {
             private GridPane grid = new GridPane();
             private Text txtPace = new Text(getPace());
@@ -74,6 +77,10 @@ public class Main extends Application{
             private int tempPaceMinute;
             private int tempPaceSeconds;
         
+            /**
+             * Create instance of {@code PopularEvents}.
+             * Shows a list of times for different distances in a grid
+             */
             public PopularEvents(String unit) {
                 if (unit == "mi") {
                     kmPace = (int)(paceInt / 1.6093);
@@ -100,7 +107,7 @@ public class Main extends Application{
                     new Text((conMin(false, 10)) + ":" + (conSec(false, 10))),                                   // 10k
                     new Text((conMin(true, 26.2)) + ":" + (conSec(true, 26.2))));                                // Marathon (26.2mi)
 
-                grid.addColumn(3, new Text(), new Text((conMin(true)) + ":" + (conSec(true))),           // 1mi
+                grid.addColumn(3, btnReturn, new Text((conMin(true)) + ":" + (conSec(true))),           // 1mi
                 new Text((conMin(true, 3)) + ":" + (conSec(true, 3))),                                           // 3mi
                 new Text((conMin(true, 5)) + ":" + (conSec(true, 5))),                                           // 5mi
                 new Text((conMin(true, 10)) + ":" + (conSec(true, 10))),                                         // 10mi
@@ -170,6 +177,18 @@ public class Main extends Application{
                 PopularEvents displayGrid = new PopularEvents(paceUnit);
             }
         });
+
+        btnReturn.setOnAction(e -> {
+            pane.getChildren().clear();
+            Entry entry = new Entry();
+        });
+
+        // Scene and Stage
+        Entry entry = new Entry();
+        Scene scene = new Scene(pane, 700, 250);
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Split Calculator");
+        primaryStage.show();
     }
     
     public void setTime(double p, double d) {
